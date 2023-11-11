@@ -1,0 +1,96 @@
+body {
+	position: relative;
+	font-family: 'Noto Sans', sans-serif;
+	font-size: 18px;
+	line-height: 1.4;
+	background: #333;
+	color: #ffffff;
+	min-width: 320px;
+	overflow-x: hidden;
+	height: auto;
+}
+
+.navbar {
+   background: #333;
+	width: 100%;
+   box-shadow:0px 7px #161616;
+   z-index: 100;
+}
+
+.navbar-head{
+   margin-left: auto;
+   margin-right: auto;
+   width: 15em;
+}
+
+a {
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.navbar-wrap {
+	height: inherit;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+   margin-left: auto;
+   margin-right:auto;
+   width: 30%;
+}
+
+.navbar-wrap {
+	list-style-type: none;
+	padding-left: 0;
+	margin-bottom: 0;
+}
+
+.navbar-wrap a:hover {
+	color: #ffd800;
+}
+
+.bkimage{
+   background: url(bk.avif);
+   background-repeat: no-repeat;
+   background-position: center;
+   background-attachment: fixed;
+   background-size: cover;
+ }
+
+.container {
+   position: relative;
+   margin-left: auto;
+   margin-right: auto;
+   width: 50%;
+   background: rgba(255, 255, 255, 0.4);
+}
+
+.content{
+   margin-left:5%;
+   margin-right:5%;
+}
+.article-block {
+   background: #333;
+   border: 1px solid white;
+   font-family: 'Ubuntu', sans-serif;
+   box-shadow: 8px 8px 1px #161616;
+   padding: 10px;
+}
+
+.article-block a:hover {
+	color: #ffd800;
+}
+
+.Allp{
+   position: relative;
+   margin-left: auto;
+   margin-right: auto;
+   width: 40%;
+   background: #333;
+   text-align: center;
+   font-size: 30px;
+}
+
+.ALLp a:hover {
+	color: #ffd800;
+   opacity: 1;
+}

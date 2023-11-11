@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% spaceless %}
+
+
+
+{% if articles %}
+{% for item in articles %}
+<div class="article-block">
+    <a href="{{ item.get_absolute_url }}">
+        <h4>{{ item.title }}</h4>
+    </a>
+    <h5>
+        {{ item.pub_date|date:"j E Y"|safe|linebreaks }}
+    </h5>
+    <p>
+        {{ item.description|safe|escape|striptags|truncatewords_html:32 }}
+    </p>
+</div>
+{% endfor %}
+{% endif %}
+{% endspaceless %}
+{% endblock %}
