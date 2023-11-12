@@ -1,24 +1,27 @@
 pipeline {
     agent any
-    stages {      
+    stages { 
+/*
         stage('Destroy previous infrastructure') {
             steps {
                 sh '''
-                    cd ~/DevOps-SecondDemo/
+                    cd ~/DevOps-ThirdDemo/
                     terraform init
-                    terraform state rm aws_route53_zone.primary
+                    kubectl delete -f k8s/aws-test.yaml
+                    kubectl delete -f k8s/deployment.yaml
+                    kubectl delete -f k8s/public-lb.yaml
                     terraform destroy -auto-approve
                     cd ~
-                    rm -rf ~/DevOps-SecondDemo/
+                    rm -rf ~/DevOps-ThirdDemo/
                 '''
             }
         }
-/*     
+*/     
         stage('Clone repository') {
             steps {
                 sh '''
                     cd ~
-                    git clone https://github.com/RichyCey/DevOps-SecondDemo.git
+                    git clone https://github.com/RichyCey/DevOps-ThirdDemo.git
                 '''
             }
         }
@@ -26,7 +29,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'DATADOG_API', variable: 'datadog_id')]) {
                     sh '''
-                        cd ~/DevOps-SecondDemo/
+                        cd ~/DevOps-ThirdDemo/
                         terraform init
                         terraform apply -auto-approve -target=module.ecr"
                     '''
@@ -38,7 +41,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'AWS_REGION', variable: 'aws_region'), string(credentialsId: 'AWS_ID', variable: 'aws_id')]) {
                     sh '''
                         aws --version
-                        cd ~/DevOps-SecondDemo/
+                        cd ~/DevOps-ThirdDemo/
                         docker build . -t softserve-demo:latest
                         aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${aws_id}.dkr.ecr.${aws_region}.amazonaws.com
                         docker tag softserve-demo ${aws_id}.dkr.ecr.${aws_region}.amazonaws.com/softserve-demo:lastest
@@ -51,10 +54,13 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'DATADOG_API', variable: 'datadog_id'), string(credentialsId: 'ROUTE53_ID', variable: 'route53_zone_id')]) {
                     sh '''
-                        cd ~/DevOps-SecondDemo/
+                        cd ~/DevOps-ThirdDemo/
                         terraform init
-                        terraform import aws_route53_zone.primary ${route53_zone_id}
-                        terraform apply -auto-approve -var "DATADOG_API_KEY=${datadog_id}"
+                        terraform apply -auto-approve
+                        aws eks --region ${aws_region} update-kubeconfig --name demo
+                        kubectl apply -f k8s/aws-test.yaml
+                        kubectl apply -f k8s/deployment.yaml
+                        kubectl apply -f k8s/public-lb.yaml
                     '''
                 }
             }
@@ -66,6 +72,5 @@ pipeline {
                 '''
             }
         }
-*/
     }
 }

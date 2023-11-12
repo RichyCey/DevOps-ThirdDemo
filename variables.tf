@@ -1,17 +1,17 @@
 variable "ecr_name" {
   description = "The list of ecr names to create"
   type        = list(string)
-  default     = null
+  default     = ["softserve-demo"]
 }
 variable "tags" {
   description = "The key-value maps for tagging"
   type        = map(string)
-  default     = {}
+  default     = {"Environment" = "Dev"}
 }
 variable "image_mutability" {
   description = "Provide image mutability"
   type        = string
-  default     = "MUTABLE"
+  default     = "IMMUTABLE"
 }
 
 variable "encrypt_type" {
