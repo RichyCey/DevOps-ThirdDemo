@@ -1,7 +1,7 @@
 # Use the Python slim image
 FROM python:3.10.3
 
-# Set the working directory to /var/www/html
+# Set the working directory
 WORKDIR /usr/src/app
 
 # Set environment variables

@@ -28,7 +28,7 @@ pipeline {
                     sh '''
                         cd ~/DevOps-SecondDemo/
                         terraform init
-                        terraform apply -auto-approve -target=module.ecr -var "DATADOG_API_KEY=${datadog_id}"
+                        terraform apply -auto-approve -target=module.ecr"
                     '''
                 }
             }
@@ -39,10 +39,10 @@ pipeline {
                     sh '''
                         aws --version
                         cd ~/DevOps-SecondDemo/
-                        docker build . -t softserve-demo-ecr:latest
+                        docker build . -t softserve-demo:latest
                         aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${aws_id}.dkr.ecr.${aws_region}.amazonaws.com
-                        docker tag softserve-demo-ecr ${aws_id}.dkr.ecr.${aws_region}.amazonaws.com/softserve-demo-ecr:lastest
-                        docker push ${aws_id}.dkr.ecr.${aws_region}.amazonaws.com/softserve-demo-ecr:lastest
+                        docker tag softserve-demo ${aws_id}.dkr.ecr.${aws_region}.amazonaws.com/softserve-demo:lastest
+                        docker push ${aws_id}.dkr.ecr.${aws_region}.amazonaws.com/softserve-demo:lastest
                     '''
                 }
             }
