@@ -1,22 +1,20 @@
 pipeline {
     agent any
-    stages { 
-/*
+    stages {
         stage('Destroy previous infrastructure') {
             steps {
                 sh '''
                     cd ~/DevOps-ThirdDemo/
-                    terraform init
                     kubectl delete -f k8s/aws-test.yaml
                     kubectl delete -f k8s/deployment.yaml
                     kubectl delete -f k8s/public-lb.yaml
+                    terraform init
                     terraform destroy -auto-approve
                     cd ~
                     rm -rf ~/DevOps-ThirdDemo/
                 '''
             }
-        }
-*/     
+        } 
         stage('Clone repository') {
             steps {
                 sh '''
@@ -25,13 +23,13 @@ pipeline {
                 '''
             }
         }
-        stage('Create EC Registry') {
+        stage('Creating Infrastructure') {
             steps {
-                withCredentials([string(credentialsId: 'DATADOG_API', variable: 'datadog_id')]) {
+                withCredentials([string(credentialsId: 'AWS_REGION', variable: 'aws_region'), string(credentialsId: 'ROUTE53_ID', variable: 'route53_zone_id')]) {
                     sh '''
                         cd ~/DevOps-ThirdDemo/
                         terraform init
-                        terraform apply -auto-approve -target=module.ecr"
+                        terraform apply -auto-approve
                     '''
                 }
             }
@@ -50,26 +48,35 @@ pipeline {
                 }
             }
         }
-        stage('Creating Infrastructure') {
+        stage('Launching app') {
             steps {
-                withCredentials([string(credentialsId: 'DATADOG_API', variable: 'datadog_id'), string(credentialsId: 'ROUTE53_ID', variable: 'route53_zone_id')]) {
+                withCredentials([string(credentialsId: 'AWS_REGION', variable: 'aws_region'), string(credentialsId: 'ROUTE53_ID', variable: 'route53_zone_id')]) {
                     sh '''
                         cd ~/DevOps-ThirdDemo/
-                        terraform init
-                        terraform apply -auto-approve
                         aws eks --region ${aws_region} update-kubeconfig --name demo
                         kubectl apply -f k8s/aws-test.yaml
                         kubectl apply -f k8s/deployment.yaml
                         kubectl apply -f k8s/public-lb.yaml
+                        
                     '''
                 }
             }
-        }
+        }      
         stage("Cleaning build environment"){
             steps{
                 sh '''
                     docker system prune -a --volumes -f
                 '''
+            }
+        }
+        stage("Add DNS"){
+            steps{
+                withCredentials([string(credentialsId: 'AWS_REGION', variable: 'aws_region')]) {
+                    sh '''
+                        aws eks --region ${aws_region} update-kubeconfig --name demo
+                        ~/update_route53.sh
+                    '''
+                }
             }
         }
     }
